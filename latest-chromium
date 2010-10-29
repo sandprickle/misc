@@ -20,7 +20,7 @@ if [[ $current != $latest ]]; then
     echo "==> Fetching Chromium build $latest" >&2
 
     # setup a temp dir to do some work
-    tmpdir=$(mktemp -d 'chromium.XXX'); cd "$tmpdir"
+    tmpdir=$(mktemp -d -t "$(basename "$0").XXX"); cd "$tmpdir"
 
     trap "cd && rm -rf $tmpdir" INT TERM EXIT
 
