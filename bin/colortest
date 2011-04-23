@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+from scriptutils.terminal import Terminal
+from scriptutils.arguments import Arguments
+
+def get_arguments(): #{{{1
+    a = Arguments(description="Test text in various colors.")
+    a.add_argument('numbers', metavar='NUMBER', nargs='*', help='a color number')
+    a.add_argument('-t', '--text', default='test', help="use TEXT as the sample text")
+    return a.parse_args()
+
+def main():
+    args = get_arguments()
+    term = Terminal()
+    numbers = args.numbers or range(term.COLORS)
+    for n in numbers:
+       print term.fg(int(n))+args.text+term.RESET +' '+ str(n)
+
+if __name__ == '__main__': main()
