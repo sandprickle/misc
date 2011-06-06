@@ -3,10 +3,10 @@
 # Filename:      move-to-new-directory
 # Description:   Moves all given files to a new folder
 # Maintainer:    Jeremy Cantrell <jmcantrell@gmail.com>
-# Last Modified: Sun 2010-10-03 02:59:17 (-0400)
+# Last Modified: Sat 2011-06-04 17:17:13 (-0400)
 
 # While this can be used at the command line, it was intended to be used
-# within nautilus using eithe the scripts folder or nautilus-actions.
+# within nautilus using either the scripts folder or nautilus-actions.
 #
 # I've often found myself creating a new directory, naming it, then moving a
 # bunch of files into it. This changes that workflow to simply selecting a
@@ -14,10 +14,31 @@
 # It may not be immediately obvious how, but this script has saved me an
 # immense amount of time.
 
-(( $# == 0 )) && exit 1
+source bashful-messages
+source bashful-modes
+source bashful-zenity
 
-source bashful-input
-source bashful-utils
+SCRIPT_NAME=$(basename "$0")
+SCRIPT_ARGUMENTS="[FILE...]"
+SCRIPT_USAGE="Creates a new directory and moves all given files into it"
+
+interactive ${INTERACTIVE:-1}
+verbose     ${VERBOSE:-1}
+
+unset OPTIND
+while getopts ":hifvqd:" option; do
+    case $option in
+        d) directory=$OPTARG ;;
+        i) interactive 1 ;;
+        f) interactive 0 ;;
+        v) verbose 1 ;;
+        q) verbose 0 ;;
+        h) usage 0 ;;
+        *) usage 1 ;;
+    esac
+done && shift $(($OPTIND - 1))
+
+(( $# == 0 )) && exit 1
 
 if (( $# > 1 )); then
     # If more than one file given, get the common prefix...
@@ -31,21 +52,27 @@ else
     common=${1%% *}
 fi
 
-name=$(input -d "$(trim <<<"$common")" -p "Enter directory") || exit 1
-dir=$PWD/$name
+if [[ ! $directory ]]; then
+    name=$(input_zenity -d "$(trim <<<"$common")" -p "Enter directory") || exit 1
+    directory=$PWD/$name
+else
+    name=$(basename "$directory")
+fi
 
-mkdir -p "$dir"
+[[ $directory ]] || die "No directory provided"
 
-if [[ -d $dir ]]; then
+mkdir -p "$directory"
+
+if [[ -d $directory ]]; then
     # This will remove the name of the container directory from the beginning
     # of each file. This is the most common scenario that I use.
-    if question -p "Strip common?"; then
+    if question_zenity -p "Strip common?"; then
         for f in "$@"; do
             new_f=$(basename "$f")
             new_f=$(trim <<<"${new_f#$name}")
-            mv -nv "$f" "$dir/$new_f"
+            mv -nv "$f" "$directory/$new_f"
         done
     else
-        mv -nv "$@" "$dir"
+        mv -nv "$@" "$directory"
     fi
 fi

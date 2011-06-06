@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Filename:      terminal-here
+# Description:   Open a terminal to the given directory.
+# Maintainer:    Jeremy Cantrell <jmcantrell@gmail.com>
+# Last Modified: Sun 2011-06-05 20:21:18 (-0400)
+
+source bashful-messages
+
+SCRIPT_NAME=$(basename "$0" .sh)
+SCRIPT_USAGE="Open a terminal to the given directory"
+SCRIPT_OPTIONS="
+-d DIRECTORY  Open terminal with DIRECTORY as \$PWD
+-t TERMINAL   Use TERMINAL for the terminal command
+"
+
+directory=$PWD
+name=${SCRIPT_NAME#terminal-here}
+if [[ $name ]]; then
+    terminal=${name##-}
+else
+    terminal=x-terminal-emulator
+fi
+
+unset OPTIND
+while getopts ":hd:t:" option; do
+    case $option in
+        d) directory=$OPTARG ;;
+        t) terminal=$OPTARG ;;
+        h) usage 0 ;;
+        *) usage 1 ;;
+    esac
+done && shift $(($OPTIND - 1))
+
+# If exactly one argument is being passed by the file manager,
+# then get the directory from that.
+if (( $# == 1 )); then
+    if [[ -d $1 ]]; then
+        directory=$1
+    else
+        directory=$(dirname "$1")
+    fi
+fi
+
+cd "$directory" && exec "$terminal"
