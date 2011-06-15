@@ -3,7 +3,7 @@
 # Install the latest Chromium mac nightly build, but only
 # if it's different from the currently installed version.
 
-build_url="http://build.chromium.org/f/chromium/snapshots/chromium-rel-mac/"
+build_url="http://build.chromium.org/f/chromium/snapshots/Mac/"
 install_dir="/Applications/Chromium.app"
 
 # Determine the currently installed chromium build number
