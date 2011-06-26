@@ -1,1 +1,3 @@
-terminal-here
+#!/usr/bin/env bash
+
+terminal-here -e bash "$@"

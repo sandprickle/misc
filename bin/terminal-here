@@ -3,7 +3,7 @@
 # Filename:      terminal-here
 # Description:   Open a terminal to the given directory.
 # Maintainer:    Jeremy Cantrell <jmcantrell@gmail.com>
-# Last Modified: Sun 2011-06-05 20:21:18 (-0400)
+# Last Modified: Sun 2011-06-26 16:42:30 (-0400)
 
 source bashful-messages
 
@@ -11,22 +11,17 @@ SCRIPT_NAME=$(basename "$0" .sh)
 SCRIPT_USAGE="Open a terminal to the given directory"
 SCRIPT_OPTIONS="
 -d DIRECTORY  Open terminal with DIRECTORY as \$PWD
--t TERMINAL   Use TERMINAL for the terminal command
+-e COMMAND    Execute COMMAND
 "
 
 directory=$PWD
-name=${SCRIPT_NAME#terminal-here}
-if [[ $name ]]; then
-    terminal=${name##-}
-else
-    terminal=x-terminal-emulator
-fi
+command=(x-terminal-emulator)
 
 unset OPTIND
-while getopts ":hd:t:" option; do
+while getopts ":hd:e:" option; do
     case $option in
         d) directory=$OPTARG ;;
-        t) terminal=$OPTARG ;;
+        e) command=("${command[@]}" -e "$OPTARG") ;;
         h) usage 0 ;;
         *) usage 1 ;;
     esac
@@ -42,4 +37,4 @@ if (( $# == 1 )); then
     fi
 fi
 
-cd "$directory" && exec "$terminal"
+cd "$directory" && exec "${command[@]}"
