@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+DIR=$(readlink -f "${1:-$HOME/.ssh}")
+
+chmod 700 "$DIR"
+find "$DIR/" -type f -name "id_*" \! -name "*.pub" -exec chmod 600 {} \;
