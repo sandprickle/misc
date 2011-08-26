@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+dir=$(mktemp -d)
+cd "$dir"
+PS1=$1'% ' zsh -d -f
